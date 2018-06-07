@@ -15,7 +15,7 @@ This experiment shows:
   its closure) into a Docker image.
 
 
-## Building (without installing)
+### Building (without installing)
 
 (Assuming exp-01 is the current directory.)
 
@@ -35,7 +35,7 @@ image that is able to extract the tarball into its Nix store, then run its
 to guess its name. In practice this should be made more flexible.)
 
 
-## Installing
+### Installing
 
 ```
 $ nix-env --install -A exp-01-nginx -f default.nix
@@ -45,7 +45,7 @@ In practice, this means building the Nix expression just as above, but also
 putting the "run" script in the PATH.
 
 
-## Uninstalling
+### Uninstalling
 
 In practice, this means removing the "run" script from the PATH.
 
@@ -54,7 +54,7 @@ $ nix-env --uninstall exp-01-nginx
 ```
 
 
-## Docker image
+### Docker image
 
 It is possible to package a Nix program to create a Docker image, see
 http://mstone.info/posts/nix-20151018/#deploying-nix-closures-to-docker
@@ -70,3 +70,61 @@ $ docker run -d -p 8080:8080 -v $(pwd)/closure.tar:/closure.tar hypered/nix
 
 TODO Another image with the tarball exctraction/restore already made (i.e. no
 volume required), maybe using build-trigger.
+
+
+## Exp-02
+
+This experiment shows:
+
+- How to create files and directories respecting some structure; here we want
+  to respect what s6-svscan requires.
+- How to use a Nix shell instead of installing or building an expression.
+
+
+### Description
+
+The second experiment creates a few directories and scripts suitable for
+s6-svscan. Just like the exp-01 creates a script to launch Nginx with the
+crafted configuration file, here we have a run-services script to launch
+s6-svscan.
+
+The default.nix file defines a services-shell environment that contains
+run-services.
+
+
+### Using nix-shell
+
+(Assuming exp-02 is the current directory.)
+
+You can enter the environment with:
+
+```
+$ nix-shell --pure -A services-shell
+```
+
+There, the script run-services in is the PATH (i.e. without installing it).
+
+Alternatively, it can be run directly:
+
+```
+$ nix-shell --pure -A services-shell --run run-services
+```
+
+Note: We can write the services-shell derivation within a shell.nix file so
+that ni-shell with any argument works.
+
+
+### TODO
+
+TODO Use busybox and execlineb for the above, not coreutils or bash.
+
+TODO Use versions of busybox and execlineb linked against musl.
+
+TODO Document how to run the above on Debian (usefull for e.g. Digital Ocean),
+and Alpine Linux (usefull for e.g. Scaleway).
+
+TODO The next experiment should create a Docker image with the closure of the
+above, using run-services (more or less) as entrypoint (i.e. similar to
+exp-01).
+
+TODO The next experiment should create a kvm image similar to the above.
