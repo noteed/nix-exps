@@ -128,3 +128,7 @@ above, using run-services (more or less) as entrypoint (i.e. similar to
 exp-01).
 
 TODO The next experiment should create a kvm image similar to the above.
+
+TODO Use the same "interface" to run Nginx than S6 (i.e. reuse `$ nix-shell
+--pure -A services-shell --run run-services` from the "Using nix-shell"
+section).
