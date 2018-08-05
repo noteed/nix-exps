@@ -68,9 +68,6 @@ The result can be run as follow:
 $ docker run -d -p 8080:8080 -v $(pwd)/closure.tar:/closure.tar hypered/nix
 ```
 
-TODO Another image with the tarball exctraction/restore already made (i.e. no
-volume required), maybe using build-trigger.
-
 
 ## Exp-02
 
@@ -85,11 +82,10 @@ This experiment shows:
 
 The second experiment creates a few directories and scripts suitable for
 s6-svscan. Just like the exp-01 creates a script to launch Nginx with the
-crafted configuration file, here we have a run-services script to launch
-s6-svscan.
+crafted configuration file, here we have a run script to launch s6-svscan.
 
 The default.nix file defines a services-shell environment that contains
-run-services.
+run.
 
 
 ### Using nix-shell
@@ -102,16 +98,28 @@ You can enter the environment with:
 $ nix-shell --pure -A services-shell
 ```
 
-There, the script run-services in is the PATH (i.e. without installing it).
+There, the script run in is the PATH (i.e. without installing it).
 
 Alternatively, it can be run directly:
 
 ```
-$ nix-shell --pure -A services-shell --run run-services
+$ nix-shell --pure -A services-shell --run run
 ```
 
 Note: We can write the services-shell derivation within a shell.nix file so
-that ni-shell with any argument works.
+that nix-shell with any argument works.
+
+
+### Docker image
+
+See the same section from the previous experiment about creating a Docker
+image.
+
+The result can be run as follow:
+
+```
+$ docker run -d -v $(pwd)/closure.tar:/closure.tar hypered/nix
+```
 
 
 ### TODO
@@ -120,15 +128,17 @@ TODO Use busybox and execlineb for the above, not coreutils or bash.
 
 TODO Use versions of busybox and execlineb linked against musl.
 
+TODO Another image with the tarball exctraction/restore already made (i.e. no
+volume required), maybe using build-trigger, built on the existing image.
+
 TODO Document how to run the above on Debian (usefull for e.g. Digital Ocean),
 and Alpine Linux (usefull for e.g. Scaleway).
 
-TODO The next experiment should create a Docker image with the closure of the
-above, using run-services (more or less) as entrypoint (i.e. similar to
-exp-01).
-
 TODO The next experiment should create a kvm image similar to the above.
 
+TODO The next experiment should combine the Nginx and S6 examples together.
+
 TODO Use the same "interface" to run Nginx than S6 (i.e. reuse `$ nix-shell
---pure -A services-shell --run run-services` from the "Using nix-shell"
-section).
+--pure -A services-shell --run run` from the "Using nix-shell"
+section). Or maybe it should be something like `$(nix-build
+...)/bin/run` in both cases ?

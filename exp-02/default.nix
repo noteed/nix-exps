@@ -19,12 +19,12 @@
 
   run_services_finish = pkgs.writeScript "finish" ''
     #! ${pkgs.execline}/bin/execlineb -W
-    echo run-services svscan told to finish.
+    echo exp-02-s6 svscan told to finish.
   '';
 
   run_services_crash = pkgs.writeScript "crash" ''
     #! ${pkgs.execline}/bin/execlineb -W
-    echo run-services svscan crash.
+    echo exp-02-s6 svscan crash.
   '';
 
   dot_s6_svscan = pkgs.stdenv.mkDerivation {
@@ -42,10 +42,10 @@
   # This should be a list of services used below (i.e. cp -a for each).
   # scandir = [ dummy ];
 
-  run_script = pkgs.writeScript "run-services" ''
+  exp-02-s6 = pkgs.writeScriptBin "run" ''
     #! ${pkgs.stdenv.shell}
     set -e
-    echo run-services is starting...
+    echo exp-02-s6 is starting...
     TMP_DIR=$(${pkgs.busybox}/bin/mktemp -d -p /tmp scandir-XXXXXX)
     echo Running service directory: ''${TMP_DIR}.
     cp -a ${readme} ''${TMP_DIR}/
@@ -54,6 +54,8 @@
     cp -a ${dot_s6_svscan} ''${TMP_DIR}/.s6-svscan
     echo Running s6-svscan...
     ${pkgs.busybox}/bin/chmod u+w -R ''${TMP_DIR}
+    # TODO Is this the correct way to bring execlineb in scope ?
+    export PATH=${pkgs.execline}/bin:$PATH
     ${pkgs.s6}/bin/s6-svscan ''${TMP_DIR}
   '';
 
@@ -62,7 +64,7 @@
     src = ./.;
     installPhase = ''
       mkdir -p $out/bin
-      cp ${run_script} $out/bin/run-services
+      cp ${exp-02-s6} $out/bin/run
     '';
   };
 
@@ -77,7 +79,7 @@
       pkgs.execline
       pkgs.s6
       dummy
-      maindir
+      exp-02-s6
     ];
   };
 
