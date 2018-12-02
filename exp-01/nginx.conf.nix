@@ -4,7 +4,7 @@ in
 ''
 worker_processes 4;
 pid /tmp/nginx.pid;
-error_log /tmp/error.log;
+error_log /tmp/logs/error.log;
 
 events {
   worker_connections 768;
@@ -13,8 +13,8 @@ events {
 http {
   default_type text/plain;
 
-  access_log /tmp/access.log;
-  error_log  /tmp/error.log;
+  access_log /tmp/logs/access.log;
+  error_log  /tmp/logs/error.log;
 
   client_body_temp_path /tmp/nginx-client-body-temp;
   proxy_temp_path       /tmp/nginx-proxy-temp;

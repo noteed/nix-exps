@@ -8,8 +8,10 @@ rec {
   exp-01-nginx = writeScriptBin "run" ''
     #! ${bash}/bin/bash
     echo Running Nginx...
-    mkdir /tmp/logs
+    mkdir -p /tmp/logs
+    echo > /tmp/logs/access.log
+    echo > /tmp/logs/error.log
     ${nginx}/bin/nginx -p /tmp -c ${exp-01-nginx-configuration}
-    ${coreutils}/bin/tail -F /tmp/access.log /tmp/error.log
+    ${coreutils}/bin/tail -F /tmp/logs/access.log /tmp/logs/error.log
   '';
 }
