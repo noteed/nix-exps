@@ -3,6 +3,8 @@
 set -e
 
 
+
+
 # Clean previous build.
 rm -rf ./cache closure.tar result
 
@@ -10,6 +12,7 @@ rm -rf ./cache closure.tar result
 nix-build -A exp-02-s6
 # nix-push --dest $(pwd)/cache result                      # Before Nix 2
 nix copy --to "file://$(pwd)/cache" $(readlink -f result)  # With Nix 2
+echo "Priority: 10" >> cache/nix-cache-info
 tar cf closure.tar cache result
 
 echo

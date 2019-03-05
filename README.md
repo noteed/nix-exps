@@ -122,7 +122,21 @@ $ docker run -d -v $(pwd)/closure.tar:/closure.tar hypered/nix
 ```
 
 
-### TODO
+## Notes
+
+In the build.sh scripts, a closure.tar.gz file is created: it contains both a
+cache directory and a result symlink into the Nix store. The cache directory is
+used as a binary cache when calling nix-restore on the symlink.
+
+Instead of using that directory and file:///cache, it is possible to push the
+directory to S3 and use https://some-bucket.
+
+The priority in in the nix-cache-info file should be lower than the one from
+cache.nixos.org.
+
+
+
+## TODO
 
 TODO Use busybox and execlineb for the above, not coreutils or bash.
 
