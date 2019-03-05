@@ -135,6 +135,94 @@ The priority in in the nix-cache-info file should be lower than the one from
 cache.nixos.org.
 
 
+## Exp-03
+
+This experiment shows:
+
+- How to create a qcow2 image of Nixos suitable for both qemu-kvm and
+  DigitalOcean.
+
+
+### Description
+
+The standard `nixpkgs` offers a few functions to build virtual machine images,
+in particular with `nixos/maintainers/scripts/openstack/nova-image.nix` and the
+function it uses, `make-disk-image.nix`.
+
+Just like what is done in the nova-image file, we have a main file called
+`qcow2.nix` that calls `make-disk-image.nix`. We provide twice our
+configuration: once as an imported module to actually affect how the resulting
+image is constructed, and once as string to define the content of
+`/etc/nixos/configuration.nix` within the image.
+
+A public SSH key of mine is hard-coded in the `config.nix`.
+
+Some other ways to build images are described at
+https://nixos.mayflower.consulting/blog/2018/09/11/custom-images/.
+
+
+### Building
+
+To build the `qcow2` file:
+
+```
+$ nix-build '<nixpkgs/nixos>' \
+    -A config.system.build.qcow2 \
+    --arg configuration "{ imports = [ ./qcow2.nix ]; }"
+```
+
+
+### Running with qemu-kvm
+
+We create a configuration disk for cloud-init (hopefully mimicking what
+DigitalOcean does; some documetation says they use a particular IP address,
+some documetation says they use a disk...).
+
+The disk is created by the helper script `make-cidata.sh`.
+
+To run the result locally with qemu-kvm:
+
+```
+$ qemu-kvm -hda result/nixos.qcow2 \
+    -m 4096 \
+    -drive file=cidata.img,if=virtio \
+    -nic user,hostfwd=tcp:127.0.0.1:2222-:22 \
+    -no-reboot -snapshot -nographic
+```
+
+Once running, it should be possible to SSH into the VM with:
+
+```
+$ ssh -p 2222 nixos@127.0.0.1
+```
+
+Stopping the VM can be done with C-a x in the original shell.
+
+
+### DigitalOcean
+
+The image weights about 2.2GB, which is the size of its `/nix` store. Applying
+gzip reduces it to 600MB.
+
+After upload to DigitalOcean Spaces then import it in their custom images
+section, it is possible to spin a new droplet. After a while, it is possible to
+SSH into it.
+
+Note that you have to configure a SSH key in their web interface even though
+there is already one in the image.
+
+The second time a droplet is created, the time to create it is more reasonable.
+
+
+### Further configuration
+
+
+In the `qcow2.nix` file, the main work is done by
+`nixos/lib/make-disk-image.nix`. It uses a variable called `closureInfo`,
+which, in that file, is derived from `toplevel channelSource`. In other places,
+it is derived from `storeContents`. I think this is where to look to customize
+the `/nix/store` within the created image (e.g. to reduce the 2.2GB size).
+
 
 ## TODO
 
@@ -156,3 +244,6 @@ TODO Use the same "interface" to run Nginx than S6 (i.e. reuse `$ nix-shell
 --pure -A services-shell --run run` from the "Using nix-shell"
 section). Or maybe it should be something like `$(nix-build
 ...)/bin/run` in both cases ?
+
+TODO See the cloud-init logs when spinnig an image at DigitalOcean, to see if
+they provide a disk or if we should call their meta-data server.
