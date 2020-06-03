@@ -139,8 +139,10 @@ cache.nixos.org.
 
 This experiment shows:
 
-- How to create a qcow2 image of Nixos suitable for both qemu-kvm and
+- How to create a qcow2 image of NixOS suitable for both qemu-kvm and
   DigitalOcean.
+
+Note: See also [Nix notes](https://github.com/noteed/nix-notes).
 
 
 ### Description
