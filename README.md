@@ -226,6 +226,42 @@ it is derived from `storeContents`. I think this is where to look to customize
 the `/nix/store` within the created image (e.g. to reduce the 2.2GB size).
 
 
+## Exp-04
+
+This experiment shows:
+
+- how to use `dockerTools`, an awesome nixpkgs utility to build Docker images
+  from Nix expressions.
+- how to do it from within a `nixos/nix` image: no need to have Nix on the host
+  to use `dockerTools` !
+
+The Docker image can be built directly with Nix with:
+
+```
+$ nix-build images.nix -A web
+```
+
+The `result` symlink can be loaded with `docker load -i`.
+
+Alternatively, it can be built by using the Nix Docker image, in two steps:
+
+```
+$ ./build-cache.sh
+$ ./build-web.sh
+```
+
+The first command is supposed be run rarely (e.g. once a week) to provide some
+caching. The second step is the important one, building the Docker image within
+another image, then extracting it, and loading it.
+
+As a convenience, a `run-web.sh` script is also provided:
+
+```
+$ ./run-web.sh
+$ curl http://127.0.0.1:9000
+```
+
+
 ## TODO
 
 TODO Use busybox and execlineb for the above, not coreutils or bash.
