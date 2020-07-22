@@ -124,15 +124,15 @@ $ docker run -d -v $(pwd)/closure.tar:/closure.tar hypered/nix
 
 ## Notes
 
-In the build.sh scripts, a closure.tar.gz file is created: it contains both a
-cache directory and a result symlink into the Nix store. The cache directory is
-used as a binary cache when calling nix-restore on the symlink.
+In the `build.sh` script, a `closure.tar.gz` file is created: it contains both
+a cache directory and a result symlink into the Nix store. The cache directory
+is used as a binary cache when calling `nix-restore` on the symlink.
 
-Instead of using that directory and file:///cache, it is possible to push the
-directory to S3 and use https://some-bucket.
+Instead of using that directory and `file:///cache`, it is possible to push the
+directory to S3 and use `https://some-bucket`.
 
-The priority in in the nix-cache-info file should be lower than the one from
-cache.nixos.org.
+The priority in the `nix-cache-info` file should be lower than the one from
+`cache.nixos.org`.
 
 
 ## Exp-03
@@ -230,12 +230,12 @@ the `/nix/store` within the created image (e.g. to reduce the 2.2GB size).
 
 This experiment shows:
 
-- how to use `dockerTools`, an awesome nixpkgs utility to build Docker images
+- How to use `dockerTools`, an awesome nixpkgs utility to build Docker images
   from Nix expressions.
-- how to do it from within a `nixos/nix` image: no need to have Nix on the host
+- How to do it from within a `nixos/nix` image: no need to have Nix on the host
   to use `dockerTools` !
 
-The Docker image can be built directly with Nix with:
+The final Docker image can be built directly with Nix with:
 
 ```
 $ nix-build images.nix -A web
@@ -243,7 +243,8 @@ $ nix-build images.nix -A web
 
 The `result` symlink can be loaded with `docker load -i`.
 
-Alternatively, it can be built by using the Nix Docker image, in two steps:
+Alternatively, the image can be built by using the Nix Docker image, in two
+steps:
 
 ```
 $ ./build-cache.sh
@@ -251,8 +252,8 @@ $ ./build-web.sh
 ```
 
 The first command is supposed be run rarely (e.g. once a week) to provide some
-caching. The second step is the important one, building the Docker image within
-another image, then extracting it, and loading it.
+caching. The second step is the important one: it builds the final Docker image
+within another image, then extracting it, and loading it.
 
 As a convenience, a `run-web.sh` script is also provided:
 
