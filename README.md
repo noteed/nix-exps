@@ -234,6 +234,8 @@ This experiment shows:
   from Nix expressions.
 - How to do it from within a `nixos/nix` image: no need to have Nix on the host
   to use `dockerTools` !
+- How to use the above with `skopeo` and `umoci` to create a single multi-step
+  Dockerfile to build the final image in one command.
 
 The final Docker image can be built directly with Nix with:
 
@@ -260,6 +262,16 @@ As a convenience, a `run-web.sh` script is also provided:
 ```
 $ ./run-web.sh
 $ curl http://127.0.0.1:9000
+```
+
+Instead of using `build-web.sh` and the corresponding `images/web.Dockerfile`,
+we can shift the work to a single Dockerfile, as shown in
+`images/web-complete.Dockerfile`. Thus the final image can also be built with a
+single `docker` command:
+
+```
+$ ./build-cache.sh
+$ docker build -f images/web-complete.Dockerfile -t web .
 ```
 
 

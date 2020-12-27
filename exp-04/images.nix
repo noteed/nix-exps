@@ -66,4 +66,6 @@ in
       };
     };
   };
+
+  web-cmd = nginxSetup;
 }

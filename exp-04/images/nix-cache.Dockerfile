@@ -7,5 +7,8 @@
 #
 FROM nix-base AS nix-cache
 
+# Pre-download useful tools.
+RUN nix-build "<nixpkgs>" --attr skopeo --attr umoci
+
 ADD images.nix .
 RUN nix-build images.nix --attr web --no-out-link
